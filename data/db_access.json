@@ -1,0 +1,5 @@
+{
+    "admin": ["bp_query", "bp_auth", "bp_report", "bp_registration"],
+    "manager": ["bp_report", "bp_registration"],
+    "user": []
+}

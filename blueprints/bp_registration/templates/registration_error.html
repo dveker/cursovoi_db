@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ошибка регистрации</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="content">
+        <div class="message-error">
+            <h2>  Ошибка регистрации</h2>
+            <p>{{ error }}</p>
+            <div style="margin-top: 20px;">
+                <a href="{{ url_for('bp_registration.registration_index') }}" class="btn">↩ Вернуться к регистрации</a>
+                <a href="{{ url_for('main_menu') }}" class="btn"> В главное меню</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

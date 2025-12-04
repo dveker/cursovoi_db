@@ -1,0 +1,1 @@
+UPDATE unloading_teams SET ship_registration_id = NULL WHERE ship_registration_id = %s

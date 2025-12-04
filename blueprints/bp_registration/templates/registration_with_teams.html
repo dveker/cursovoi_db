@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация кораблей с бригадами</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <h1>Регистрация кораблей с назначением бригад</h1>
+            <a href="{{ url_for('main_menu') }}">← Вернуться в меню</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Форма добавления корабля -->
+        <div class="interactive-form">
+            <h3>Добавить корабль и назначить бригаду</h3>
+            <form action="{{ url_for('bp_registration.add_to_registration') }}" method="POST">
+                <div class="form-group">
+                    <label>Название корабля:</label>
+                    <input type="text" name="ship_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Тип корабля:</label>
+                    <select name="ship_type_id" required>
+                        <option value="">Выберите тип</option>
+                        {% for type in ship_types %}
+                            <option value="{{ type.id }}">{{ type.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Водоизмещение (тонны):</label>
+                    <input type="number" step="0.01" name="tonnage" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Порт приписки:</label>
+                    <select name="home_port" required>
+                        <option value="">Выберите порт</option>
+                        {% for port in ports %}
+                            <option value="{{ port }}">{{ port }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Бригада для разгрузки (опционально):</label>
+                    <select name="team_id">
+                        <option value="">Без бригады</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">
+                                {{ team.team_name }} ({{ team.member_count }} чел.)
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <small class="suggestions">Выберите бригаду, если нужно сразу назначить разгрузку</small>
+                </div>
+
+                <button type="submit">Добавить в корзину</button>
+            </form>
+        </div>
+
+        <!-- Корзина регистрации -->
+        {% if cart %}
+        <div class="results">
+            <h3>Корзина регистрации ({{ cart|length }} кораблей)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Тип</th>
+                        <th>Водоизмещение</th>
+                        <th>Порт</th>
+                        <th>Бригада</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item_id, ship in cart.items() %}
+                    <tr>
+                        <td>{{ ship.ship_name }}</td>
+                        <td>
+                            {% for type in ship_types %}
+                                {% if type.id|string == ship.ship_type_id %}
+                                    {{ type.name }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ ship.tonnage }} т</td>
+                        <td>{{ ship.home_port }}</td>
+                        <td>
+                            {% if ship.team_id %}
+                                {% for team in teams %}
+                                    {% if team.id|string == ship.team_id %}
+                                        {{ team.team_name }}
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span style="color: #999;">Не назначена</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{{ url_for('bp_registration.remove_from_registration', cart_item_id=item_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-danger btn-small">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px;">
+                <form action="{{ url_for('bp_registration.submit_registration') }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn">Зарегистрировать все корабли</button>
+                </form>
+                <form action="{{ url_for('bp_registration.clear_registration') }}" method="POST" style="display:inline; margin-left: 10px;">
+                    <button type="submit" class="btn-danger">🗑️ Очистить корзину</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="message">
+            <p>Корзина регистрации пуста. Добавьте корабли для регистрации.</p>
+        </div>
+        {% endif %}
+
+        <!-- Информация о бригадах -->
+        {% if teams %}
+        <div class="report-info" style="margin-top: 30px;">
+            <h3> Доступные бригады для разгрузки</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Название бригады</th>
+                        <th>Кол-во человек</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                    <tr>
+                        <td>{{ team.team_name }}</td>
+                        <td>{{ team.member_count }}</td>
+                        <td><span style="color: green;">✓ Свободна</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

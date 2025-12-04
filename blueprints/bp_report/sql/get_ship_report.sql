@@ -1,0 +1,1 @@
+CALL port_system.GetShipTypeReport(%s, %s)

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Отчет по причалам</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Отчет по причалам</h1>
+        <a href="{{ url_for('bp_report.create_berth_report_handle') }}">Назад к созданию</a>
+    </div>
+
+    <div class="content">
+        <h2>Отчет за {{ month }}/{{ year }}</h2>
+
+        {% if reports %}
+            {% if reports[0].отчет %}
+                <!-- Общая статистика -->
+                <div class="ship-turnover-summary">
+                    <h4>{{ reports[0].отчет }}</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ reports[0].всего_кораблей }}</div>
+                            <div class="stat-label">Всего кораблей</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">
+                                {{ "%.0f"|format(reports[0].общий_тоннаж) }}
+                            </div>
+                            <div class="stat-label">Общий тоннаж</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">
+                                {{ "%.1f"|format(reports[0].среднее_время_стоянки) }}
+                            </div>
+                            <div class="stat-label">Среднее время стоянки (часов)</div>
+                        </div>
+                    </div>
+                </div>
+                <p>Детальная информация по причалам недоступна (отсутствуют данные о причалах в базе данных).</p>
+            {% else %}
+                <!-- Детальный отчет по причалам -->
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Номер причала</th>
+                            <th>Тип причала</th>
+                            <th>Количество кораблей</th>
+                            <th>Общий тоннаж</th>
+                            <th>Среднее время стоянки (часов)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for report in reports %}
+                        <tr>
+                            <td>{{ report.номер_причала }}</td>
+                            <td>{{ report.тип_причала }}</td>
+                            <td>{{ report.кораблей }}</td>
+                            <td>{{ "%.2f"|format(report.общий_тоннаж) }}</td>
+                            <td>{{ "%.1f"|format(report.среднее_время_стоянки) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="ship-turnover-summary">
+                    <h4>Сводная статистика</h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ reports|length }}</div>
+                            <div class="stat-label">Причалов</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">
+                                {{ reports|sum(attribute='кораблей') }}
+                            </div>
+                            <div class="stat-label">Всего кораблей</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">
+                                {{ "%.0f"|format(reports|sum(attribute='общий_тоннаж')) }}
+                            </div>
+                            <div class="stat-label">Общий тоннаж</div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <p>Нет данных для отображения</p>
+        {% endif %}
+    </div>
+</body>
+</html>

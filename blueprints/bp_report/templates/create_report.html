@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Создание отчета</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Создание отчета по типам кораблей</h1>
+        <a href="{{ url_for('bp_report.report_menu_handle') }}">Назад к меню</a>
+    </div>
+
+    <div class="content">
+        <h2>Создать отчет за период</h2>
+
+        {% if message %}
+            <div class="{% if 'успешно' in message %}message-success{% else %}message-error{% endif %}">
+                {{ message }}
+            </div>
+        {% endif %}
+
+        <form method="post" class="report-form">
+            <div class="form-group">
+                <label>Месяц (1-12):</label>
+                <input type="number" name="month" min="1" max="12" required>
+            </div>
+
+            <div class="form-group">
+                <label>Год:</label>
+                <input type="number" name="year" min="2020" max="2030" required>
+            </div>
+
+            <button type="submit">Создать отчет</button>
+        </form>
+
+        <div class="report-info">
+            <h3>Информация об отчете:</h3>
+            <p>Система автоматически создаст отчет по всем типам кораблей, заходившим в порт за указанный месяц.</p>
+            <p>В отчете будет:</p>
+            <ul>
+                <li>Количество кораблей каждого типа</li>
+                <li>Общий тоннаж по типам</li>
+                <li>Среднее время стоянки</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+SELECT id FROM ships WHERE name = %s AND home_port = %s ORDER BY id DESC LIMIT 1

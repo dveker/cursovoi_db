@@ -1,0 +1,1 @@
+SELECT DISTINCT home_port FROM ships WHERE home_port IS NOT NULL

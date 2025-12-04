@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Система отчетов порта</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Система отчетов порта</h1>
+        <div>Пользователь: {{ session.user_id }} | Роль: {{ session.user_group }} |
+             <a href="{{ url_for('main_menu') }}">Главное меню</a> |
+             <a href="{{ url_for('menu_exit') }}">Выйти</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>Меню отчетов</h2>
+
+        <div class="menu">
+            {% if session.user_group in ['admin', 'manager'] %}
+            <a href="{{ url_for('bp_report.create_report_handle') }}" class="menu-item">
+                <h3>Создать отчет</h3>
+                <p>Создание отчета по типам кораблей за месяц</p>
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('bp_report.show_reports_handle') }}" class="menu-item">
+                <h3>Просмотр отчетов</h3>
+                <p>Просмотр сохраненных отчетов по типам кораблей</p>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

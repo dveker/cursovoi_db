@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация кораблей</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="content">
+        <div class="header">
+            <h1>Регистрация новых кораблей</h1>
+            <div>
+                <a href="{{ url_for('main_menu') }}">← Главное меню</a> |
+                <a href="{{ url_for('bp_registration.active_ships') }}">Активные разгрузки</a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="message-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Форма добавления корабля -->
+        <div class="interactive-form">
+            <h3>Добавить корабль</h3>
+            <form action="{{ url_for('bp_registration.add_to_registration') }}" method="POST">
+                <div class="form-group">
+                    <label>Название корабля:</label>
+                    <input type="text" name="ship_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Тип корабля:</label>
+                    <select name="ship_type_id" required>
+                        <option value="">Выберите тип</option>
+                        {% for type in ship_types %}
+                            <option value="{{ type.id }}">{{ type.type_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Водоизмещение (тонны):</label>
+                    <input type="number" step="0.01" name="tonnage" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Порт приписки:</label>
+                    <select name="home_port" required>
+                        <option value="">Выберите порт</option>
+                        {% for port in ports %}
+                            <option value="{{ port.home_port }}">{{ port.home_port }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Бригада разгрузки (обязательно):</label>
+                    <select name="team_id" required>
+                        <option value="">-- Выберите бригаду --</option>
+                        {% for team in teams %}
+                            <option value="{{ team.id }}">
+                                {{ team.team_name }} ({{ team.member_count }} человек: {{ team.team_members }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <small class="suggestions">Выбор бригады обязателен для разгрузки корабля</small>
+                </div>
+
+                <button type="submit">Добавить в корзину регистрации</button>
+            </form>
+        </div>
+
+        <!-- Корзина регистрации -->
+        {% if cart %}
+        <div class="results">
+            <h3>Корзина регистрации ({{ cart|length }} кораблей)</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Тип</th>
+                        <th>Водоизмещение</th>
+                        <th>Порт</th>
+                        <th>Бригада</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item_id, ship in cart.items() %}
+                    <tr>
+                        <td>{{ ship.ship_name }}</td>
+                        <td>
+                            {% for type in ship_types %}
+                                {% if type.id|string == ship.ship_type_id %}
+                                    {{ type.type_name }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ ship.tonnage }} т</td>
+                        <td>{{ ship.home_port }}</td>
+                        <td>
+                            {% if ship.team_id %}
+                                {% for team in teams %}
+                                    {% if team.id|string == ship.team_id %}
+                                        <strong>{{ team.team_name }}</strong><br>
+                                        <small>{{ team.member_count }} человек</small>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <span style="color: red;"> Не назначена!</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="{{ url_for('bp_registration.remove_from_registration', cart_item_id=item_id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn-danger btn-small">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div style="margin-top: 20px;">
+                <form action="{{ url_for('bp_registration.submit_registration') }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn"> Зарегистрировать все корабли</button>
+                </form>
+                <form action="{{ url_for('bp_registration.clear_registration') }}" method="POST" style="display:inline; margin-left: 10px;">
+                    <button type="submit" class="btn-danger">🗑️ Очистить корзину</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <div class="message">
+            <p>Корзина регистрации пуста. Добавьте корабли для регистрации.</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

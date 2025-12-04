@@ -1,0 +1,3 @@
+SELECT id FROM ship_registrations
+WHERE ship_id = %s
+ORDER BY arrival_date DESC LIMIT 1

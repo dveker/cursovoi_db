@@ -1,0 +1,1 @@
+SELECT id, team_name FROM unloading_teams WHERE id = %s

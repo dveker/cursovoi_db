@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Система порта</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="content">
+        <h1>Система управления портом</h1>
+        <p>Для работы требуется вход в систему</p>
+        <a href="{{ url_for('auth_bp.auth_index') }}" class="btn">Войти в систему</a>
+
+        <div class="report-info" style="margin-top: 30px;">
+            <h3>Функции системы:</h3>
+            <ul>
+                <li>Авторизация пользователей (admin, manager, user)</li>
+                <li>Выполнение запросов к БД (для администраторов)</li>
+                <li>Система отчетов по работе порта</li>
+                <li>Регистрация кораблей с назначением бригад (для администраторов и менеджеров)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

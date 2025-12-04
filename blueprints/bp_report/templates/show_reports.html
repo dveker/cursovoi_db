@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Просмотр отчетов</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Просмотр сохраненных отчетов</h1>
+        <a href="{{ url_for('bp_report.report_menu_handle') }}">Назад к меню</a>
+    </div>
+
+    <div class="content">
+        <h2>Просмотреть сохраненный отчет</h2>
+
+        {% if error %}
+            <div class="message-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="post" class="report-form">
+            <div class="form-group">
+                <label>Месяц (1-12):</label>
+                <input type="number" name="month" min="1" max="12" required>
+            </div>
+
+            <div class="form-group">
+                <label>Год:</label>
+                <input type="number" name="year" min="2020" max="2030" required>
+            </div>
+
+            <button type="submit">Показать отчет по типам кораблей</button>
+        </form>
+
+        <div class="report-info">
+            <p>Показываются только <strong>сохраненные отчеты по типам кораблей</strong>.</p>
+        </div>
+    </div>
+</body>
+</html>

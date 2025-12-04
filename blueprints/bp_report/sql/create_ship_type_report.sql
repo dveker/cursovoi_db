@@ -1,0 +1,1 @@
+CALL port_system.CreateShipTypeReport(%s, %s)

@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Запросы</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Система запросов к БД</h1>
+        <a href="{{ url_for('main_menu') }}">Назад в меню</a>
+    </div>
+
+    <div class="content">
+        <h2>Выполнение запросов</h2>
+
+
+        <div class="query-section">
+            <h3> Поиск в базе данных</h3>
+
+            <div class="query-form">
+                <h4>Поиск сотрудников по имени</h4>
+                <form method="post">
+                    <input type="text" name="employee_name" placeholder="Имя или фамилия" required>
+                    <button type="submit">Найти сотрудников</button>
+                </form>
+            </div>
+
+            <div class="query-form">
+                <h4>Поиск кораблей по названию</h4>
+                <form method="post">
+                    <input type="text" name="ship_name" placeholder="Название корабля" required>
+                    <button type="submit">Найти корабли</button>
+                </form>
+            </div>
+
+            <div class="query-form">
+                <h4>Поиск причалов по типу</h4>
+                <form method="post">
+                    <input type="text" name="berth_type" placeholder="Тип причала" required>
+                    <button type="submit">Найти причалы</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="query-section">
+            <h3> Анализ оборота кораблей</h3>
+
+            <div class="interactive-form">
+                <h4>Оборот кораблей по типу</h4>
+                <p>Введите тип корабля для анализа статистики за 90 дней:</p>
+                <form method="post">
+                    <input type="text" name="ship_type_input" placeholder="Например: Контейнеровоз, Нефтеналивной..." required>
+                    <div class="suggestions">
+                        <small>Доступные типы: Нефтеналивной, Контейнеровоз, Зерновоз, Ро-ро, Балкер</small>
+                    </div>
+                    <button type="submit">Анализировать оборот</button>
+                </form>
+            </div>
+        </div>
+
+
+        {% if result %}
+        <div class="results">
+            <h3> Результаты запроса:</h3>
+
+            {% if query_type == 'ship_turnover_by_type.sql' and result %}
+                {% set row = result[0] %}
+                <div class="ship-turnover-summary">
+                    <h4> Статистика по типу: <strong>{{ row.ship_type }}</strong></h4>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">{{ row.total_ships_of_type if row.total_ships_of_type is not none else 0 }}</div>
+                            <div class="stat-label">Всего кораблей</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">{{ row.total_visits if row.total_visits is not none else 0 }}</div>
+                            <div class="stat-label">Всего заходов</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">
+                                {% if row.avg_tonnage is not none %}
+                                    {{ "%.0f"|format(row.avg_tonnage) }}
+                                {% else %}
+                                    0
+                                {% endif %}
+                            </div>
+                            <div class="stat-label">Ср. тоннаж (т)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">
+                                {% if row.avg_stay_hours is not none %}
+                                    {{ "%.1f"|format(row.avg_stay_hours) }}
+                                {% else %}
+                                    0.0
+                                {% endif %}
+                            </div>
+                            <div class="stat-label">Ср. время стоянки (ч)</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">{{ row.current_in_port if row.current_in_port is not none else 0 }}</div>
+                            <div class="stat-label">Сейчас в порту</div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            {% for key in result[0].keys() %}
+                            <th>{{ key|replace('_', ' ')|title }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in result %}
+                        <tr>
+                            {% for value in row.values() %}
+                            <td>
+                                {% if value is string %}
+                                    {{ value }}
+                                {% elif value is number %}
+                                    {% if value % 1 == 0 %}
+                                        {{ value|int }}
+                                    {% else %}
+                                        {{ "%.2f"|format(value) }}
+                                    {% endif %}
+                                {% elif value is none %}
+                                    -
+                                {% elif value.__class__.__name__ == 'datetime' %}
+                                    {{ value.strftime('%d.%m.%Y %H:%M') }}
+                                {% else %}
+                                    {{ value }}
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,1 @@
+UPDATE ship_registrations SET departure_date = NOW() WHERE id = %s

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Отчет по типам кораблей</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Отчет по типам кораблей</h1>
+        <a href="{{ url_for('bp_report.show_reports_handle') }}">Назад к просмотру</a>
+    </div>
+
+    <div class="content">
+        <h2>Отчет за {{ month }}/{{ year }}</h2>
+
+        {% if reports %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Тип корабля</th>
+                        <th>Количество</th>
+                        <th>Общий тоннаж</th>
+                        <th>Среднее время стоянки (часов)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td>{{ report.тип_корабля }}</td>
+                        <td>{{ report.количество }}</td>
+                        <td>{{ "%.2f"|format(report.общий_тоннаж) }}</td>
+                        <td>{{ "%.1f"|format(report.среднее_время_стоянки) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="ship-turnover-summary">
+                <h4>Сводная статистика</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ reports|length }}</div>
+                        <div class="stat-label">Типов кораблей</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">
+                            {{ reports|sum(attribute='количество') }}
+                        </div>
+                        <div class="stat-label">Всего кораблей</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">
+                            {{ "%.0f"|format(reports|sum(attribute='общий_тоннаж')) }}
+                        </div>
+                        <div class="stat-label">Общий тоннаж</div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <p>Нет данных для отображения</p>
+        {% endif %}
+    </div>
+</body>
+</html>
