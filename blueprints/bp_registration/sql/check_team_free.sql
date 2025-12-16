@@ -1,1 +1,0 @@
-SELECT id FROM unloading_teams WHERE id = %s AND ship_registration_id IS NULL

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>История кораблей</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>История кораблей</h1>
+        <div>
+            Пользователь: {{ session.user_id }} | Роль: {{ session.user_group }} |
+            <a href="{{ url_for('bp_registration.registration_index') }}">Регистрация</a> |
+            <a href="{{ url_for('main_menu') }}">Главное меню</a> |
+            <a href="{{ url_for('menu_exit') }}">Выйти</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>История всех кораблей в порту</h2>
+
+        {% if ship_history %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID корабля</th>
+                        <th>Название</th>
+                        <th>Тип</th>
+                        <th>Водоизмещение</th>
+                        <th>Порт</th>
+                        <th>Прибытие</th>
+                        <th>Отправление</th>
+                        <th>Бригада</th>
+                        <th>Время стоянки</th>
+                        <th>Статус</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ship in ship_history %}
+                    <tr>
+                        <td>{{ ship.ship_id }}</td>
+                        <td>{{ ship.ship_name }}</td>
+                        <td>{{ ship.ship_type }}</td>
+                        <td>{{ ship.tonnage }} т</td>
+                        <td>{{ ship.home_port }}</td>
+                        <td>{{ ship.arrival_date.strftime('%Y-%m-%d %H:%M') if ship.arrival_date else '—' }}</td>
+                        <td>{{ ship.departure_date.strftime('%Y-%m-%d %H:%M') if ship.departure_date else '—' }}</td>
+                        <td>{{ ship.team_name if ship.team_name else '—' }}</td>
+                        <td>
+                            {% if ship.stay_hours %}
+                                {{ ship.stay_hours|round(1) }} ч
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if ship.status == 'В порту' %}
+                                <span style="color: green; font-weight: bold;">В порту</span>
+                            {% else %}
+                                <span style="color: blue;">Ушел</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="stats" style="margin-top: 20px;">
+                <h3>Статистика истории:</h3>
+                <p>Всего записей: {{ ship_history|length }}</p>
+                <p>Кораблей в порту: {{ ship_history|selectattr('status', 'equalto', 'В порту')|list|length }}</p>
+                <p>Кораблей ушло: {{ ship_history|rejectattr('status', 'equalto', 'В порту')|list|length }}</p>
+            </div>
+        {% else %}
+            <div class="message">
+                <h3>История пуста</h3>
+                <p>В системе еще нет зарегистрированных кораблей.</p>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('bp_registration.registration_index') }}" class="btn">Добавить новый корабль</a>
+            <a href="{{ url_for('bp_registration.active_ships') }}" class="btn">Активные разгрузки</a>
+            <a href="{{ url_for('main_menu') }}" class="btn">Вернуться в меню</a>
+        </div>
+    </div>
+</body>
+</html>

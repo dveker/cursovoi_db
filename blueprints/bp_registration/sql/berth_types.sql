@@ -1,0 +1,1 @@
+SELECT id, type_name FROM berth_types

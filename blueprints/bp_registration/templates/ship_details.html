@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Информация о корабле</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Информация о корабле</h1>
+        <div>
+            <a href="{{ url_for('bp_registration.ship_history') }}">История</a> |
+            <a href="{{ url_for('main_menu') }}">Главное меню</a>
+        </div>
+    </div>
+
+    <div class="content">
+        {% if ship_info %}
+            <div class="ship-info">
+                <h2>{{ ship_info.name }}</h2>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <strong>ID корабля:</strong> {{ ship_info.id }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Тип:</strong> {{ ship_info.ship_type_name }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Водоизмещение:</strong> {{ ship_info.tonnage }} тонн
+                    </div>
+                    <div class="info-item">
+                        <strong>Домашний порт:</strong> {{ ship_info.home_port }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Всего рейсов:</strong> {{ ship_info.total_trips or 0 }}
+                    </div>
+                    <div class="info-item">
+                        <strong>Среднее время стоянки:</strong>
+                        {% if ship_info.avg_stay_hours %}
+                            {{ ship_info.avg_stay_hours|round(1) }} часов
+                        {% else %}
+                            Нет данных
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {% if ship_trips %}
+                <h3>История рейсов:</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID регистрации</th>
+                            <th>Прибытие</th>
+                            <th>Отправление</th>
+                            <th>Бригада</th>
+                            <th>Пилот</th>
+                            <th>Длительность</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trip in ship_trips %}
+                        <tr>
+                            <td>{{ trip.id }}</td>
+                            <td>{{ trip.arrival_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if trip.departure_date %}
+                                    {{ trip.departure_date.strftime('%Y-%m-%d %H:%M') }}
+                                {% else %}
+                                    <span style="color: green;">В порту</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ trip.team_name if trip.team_name else '—' }}</td>
+                            <td>{{ trip.employee_name if trip.employee_name else '—' }}</td>
+                            <td>
+                                {% if trip.stay_hours %}
+                                    {{ trip.stay_hours|round(1) }} ч
+                                {% elif not trip.departure_date %}
+                                    <span style="color: green;">В процессе</span>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="message">
+                    <p>У этого корабля еще нет истории рейсов.</p>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="message-error">
+                <p>Информация о корабле не найдена.</p>
+            </div>
+        {% endif %}
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('bp_registration.ship_history') }}" class="btn">Вернуться к истории</a>
+            <a href="{{ url_for('main_menu') }}" class="btn">Главное меню</a>
+        </div>
+    </div>
+</body>
+</html>

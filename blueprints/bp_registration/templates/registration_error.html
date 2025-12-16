@@ -5,13 +5,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 </head>
 <body>
+    <div class="header">
+        <h1>Ошибка регистрации</h1>
+        <div>
+            <a href="{{ url_for('bp_registration.registration_index') }}">Попробовать снова</a> |
+            <a href="{{ url_for('main_menu') }}">Главное меню</a>
+        </div>
+    </div>
+
     <div class="content">
-        <div class="message-error">
-            <h2>  Ошибка регистрации</h2>
-            <p>{{ error }}</p>
-            <div style="margin-top: 20px;">
-                <a href="{{ url_for('bp_registration.registration_index') }}" class="btn">↩ Вернуться к регистрации</a>
-                <a href="{{ url_for('main_menu') }}" class="btn"> В главное меню</a>
+        <div class="error-message">
+            <h2> Произошла ошибка</h2>
+
+            <div class="error-details">
+                <p><strong>Описание ошибки:</strong></p>
+                <pre>{{ error }}</pre>
+
+                <p>Пожалуйста, проверьте:</p>
+                <ul>
+                    <li>Все поля формы заполнены корректно</li>
+                    <li>Выбранная бригада доступна</li>
+                    <li>Подключение к базе данных активно</li>
+                    <li>У вас достаточно прав для регистрации</li>
+                </ul>
+            </div>
+
+            <div class="actions" style="margin-top: 30px;">
+                <a href="{{ url_for('bp_registration.registration_index') }}" class="btn">Вернуться к регистрации</a>
+                <a href="{{ url_for('main_menu') }}" class="btn">В главное меню</a>
             </div>
         </div>
     </div>

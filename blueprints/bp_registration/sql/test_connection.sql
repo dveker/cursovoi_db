@@ -1,1 +1,0 @@
-SELECT 'Connection successful' as status

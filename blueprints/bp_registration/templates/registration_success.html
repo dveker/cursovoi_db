@@ -1,80 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Активные разгрузки</title>
+    <title>Регистрация успешна</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
 </head>
 <body>
+    <div class="header">
+        <h1>Регистрация завершена</h1>
+        <div>
+            <a href="{{ url_for('bp_registration.registration_index') }}">Новая регистрация</a> |
+            <a href="{{ url_for('main_menu') }}">Главное меню</a>
+        </div>
+    </div>
+
     <div class="content">
-        <div class="header">
-            <h1>Активные разгрузки кораблей</h1>
-            <div>
-                <a href="{{ url_for('bp_registration.registration_index') }}">← К регистрации</a> |
-                <a href="{{ url_for('main_menu') }}">Главное меню</a>
+        <div class="success-message">
+            <h2> Регистрация успешно завершена!</h2>
+
+            <div class="success-info">
+                <p><strong>Зарегистрировано кораблей:</strong> {{ ships_count }} из {{ total_ships }}</p>
+
+                {% if ships_count == total_ships %}
+                    <p style="color: green;">Все корабли успешно зарегистрированы!</p>
+                {% elif ships_count > 0 %}
+                    <p style="color: orange;">
+                        Зарегистрировано {{ ships_count }} из {{ total_ships }} кораблей.
+                        {% if total_ships - ships_count > 0 %}
+                            <br>Некоторые корабли не были зарегистрированы из-за ошибок.
+                        {% endif %}
+                    </p>
+                {% else %}
+                    <p style="color: red;">Не удалось зарегистрировать ни одного корабля.</p>
+                {% endif %}
             </div>
-        </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="message-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        {% if active_ships %}
-        <div class="results">
-            <h3>Корабли на разгрузке ({{ active_ships|length }})</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Корабль</th>
-                        <th>Бригада</th>
-                        <th>Дата захода</th>
-                        <th>Лоцман</th>
-                        <th>Действия</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for ship in active_ships %}
-                    <tr>
-                        <td>{{ ship.ship_name }}</td>
-                        <td>
-                            <strong>{{ ship.team_name }}</strong><br>
-                            <small>ID: {{ ship.team_id }}</small>
-                        </td>
-                        <td>{{ ship.arrival_date }}</td>
-                        <td>{{ ship.pilot_name or 'Не назначен' }}</td>
-                        <td>
-                            <form action="{{ url_for('bp_registration.complete_unloading', registration_id=ship.registration_id) }}" method="POST">
-                                <button type="submit" class="btn-danger btn-small">
-                                     Завершить разгрузку
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% else %}
-        <div class="message">
-            <h3>Нет активных разгрузок</h3>
-            <p>Все бригады свободны и готовы к работе.</p>
-        </div>
-        {% endif %}
-
-        <div class="report-info" style="margin-top: 30px;">
-            <h3> Статус бригад</h3>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-value">{{ active_ships|length }}</div>
-                    <div class="stat-label">Занято бригад</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">{{ 3 - active_ships|length }}</div>
-                    <div class="stat-label">Свободно бригад</div>
-                </div>
+            <div class="actions" style="margin-top: 30px;">
+                <a href="{{ url_for('bp_registration.active_ships') }}" class="btn">Посмотреть активные разгрузки</a>
+                <a href="{{ url_for('bp_registration.registration_index') }}" class="btn">Добавить новые корабли</a>
+                <a href="{{ url_for('main_menu') }}" class="btn">Вернуться в меню</a>
             </div>
         </div>
     </div>

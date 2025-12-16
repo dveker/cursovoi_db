@@ -1,1 +1,0 @@
-UPDATE unloading_teams SET ship_registration_id = %s WHERE id = %s

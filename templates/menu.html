@@ -13,29 +13,32 @@
     <div class="content">
         <h2>Главное меню</h2>
         <div class="menu">
-            {% if session.user_group == 'admin' %}
+
+            {% if is_admin() %}
             <a href="{{ url_for('blueprint_query.query_index') }}" class="menu-item">
-                <h3> Запросы к БД</h3>
+                <h3>Запросы к БД</h3>
                 <p>Выполнение SQL запросов к базе данных порта</p>
             </a>
             {% endif %}
 
+
             <a href="{{ url_for('bp_report.report_menu_handle') }}" class="menu-item">
-                <h3> Система отчетов</h3>
+                <h3>Система отчетов</h3>
                 <p>Генерация и просмотр аналитических отчетов</p>
             </a>
 
-            {% if session.user_group in ['admin', 'manager'] %}
+            {% if is_manager() %}
             <a href="{{ url_for('bp_registration.registration_index') }}" class="menu-item">
-                <h3> Регистрация кораблей</h3>
+                <h3>Регистрация кораблей</h3>
                 <p>Добавление новых кораблей с назначением бригад</p>
             </a>
 
             <a href="{{ url_for('bp_registration.active_ships') }}" class="menu-item">
-                <h3> Активные разгрузки</h3>
+                <h3>Активные разгрузки</h3>
                 <p>Управление текущими разгрузками и освобождение бригад</p>
             </a>
             {% endif %}
+
         </div>
     </div>
 </body>
